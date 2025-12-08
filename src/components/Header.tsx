@@ -4,6 +4,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import { Menu, X } from 'lucide-react'
 
 interface UserSession {
     email: string
@@ -12,6 +13,7 @@ interface UserSession {
 
 export default function Header() {
     const [user, setUser] = useState<UserSession | null>(null)
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const router = useRouter()
     const pathname = usePathname()
 
@@ -40,6 +42,8 @@ export default function Header() {
     const isAdmin = user?.role === 'admin'
 
     const isActive = (path: string) => pathname === path
+
+    const closeMobileMenu = () => setMobileMenuOpen(false)
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60">
@@ -75,24 +79,95 @@ export default function Header() {
                             )}
                         </div>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-2">
                         {user ? (
-                            <div className="flex items-center space-x-4">
+                            <>
                                 <div className="hidden md:flex flex-col items-end">
                                     <span className="text-sm font-medium text-gray-900">{user.email}</span>
                                     <span className="text-xs text-gray-500 capitalize">{user.role}</span>
                                 </div>
                                 <button
                                     onClick={handleLogout}
-                                    className="inline-flex items-center justify-center rounded-lg border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
+                                    className="hidden sm:inline-flex items-center justify-center rounded-lg border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
                                 >
                                     Logout
                                 </button>
-                            </div>
+                            </>
                         ) : (
                             <Link
                                 href="/login"
-                                className="inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
+                                className="hidden sm:inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
+                            >
+                                Login
+                            </Link>
+                        )}
+
+                        {/* Mobile menu button */}
+                        <button
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className="sm:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-all duration-200"
+                            aria-expanded="false"
+                        >
+                            <span className="sr-only">Open main menu</span>
+                            {mobileMenuOpen ? (
+                                <X className="block h-6 w-6" aria-hidden="true" />
+                            ) : (
+                                <Menu className="block h-6 w-6" aria-hidden="true" />
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile menu */}
+            <div className={`sm:hidden transition-all duration-300 ease-in-out ${mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200 bg-white">
+                    {user && (
+                        <div className="px-3 py-2 border-b border-gray-200 mb-2">
+                            <p className="text-sm font-medium text-gray-900">{user.email}</p>
+                            <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+                        </div>
+                    )}
+                    <Link
+                        href="/"
+                        onClick={closeMobileMenu}
+                        className={`block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200 ${isActive('/')
+                            ? 'bg-indigo-50 text-indigo-700'
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                            }`}
+                    >
+                        Form
+                    </Link>
+                    {isAdmin && (
+                        <Link
+                            href="/admin"
+                            onClick={closeMobileMenu}
+                            className={`block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200 ${isActive('/admin')
+                                ? 'bg-indigo-50 text-indigo-700'
+                                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
+                        >
+                            Admin Dashboard
+                        </Link>
+                    )}
+
+                    {/* Login/Logout in mobile menu */}
+                    <div className="pt-2 border-t border-gray-200">
+                        {user ? (
+                            <button
+                                onClick={() => {
+                                    handleLogout()
+                                    closeMobileMenu()
+                                }}
+                                className="w-full text-left px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200"
+                            >
+                                Logout
+                            </button>
+                        ) : (
+                            <Link
+                                href="/login"
+                                onClick={closeMobileMenu}
+                                className="block px-3 py-2 rounded-lg text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 text-center"
                             >
                                 Login
                             </Link>
