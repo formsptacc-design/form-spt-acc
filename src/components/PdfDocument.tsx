@@ -147,7 +147,7 @@ const PdfDocument = ({ data }: PdfDocumentProps) => {
                     <View style={styles.signatureBlock}>
                         <View style={{ marginBottom: 60 }}>
                             <Text style={styles.signatureLine}>
-                                Pontianak, {formatDate(data.tanggal_pembuatan_spt)}
+                                <Text style={styles.boldData}>Pontianak, {formatDate(data.tanggal_pembuatan_spt)}</Text>
                             </Text>
                             <Text style={styles.signatureLine}>
                                 Hormat Kami,
