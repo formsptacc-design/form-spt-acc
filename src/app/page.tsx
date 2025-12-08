@@ -12,7 +12,6 @@ export default function Home() {
   const [formData, setFormData] = useState({
     nama_arho: '',
     nama_customer: '',
-    nama_armh: '',
     nomor_kontrak: '',
     nomor_langganan: '',
     angsuran_ke: '',
@@ -66,7 +65,6 @@ export default function Home() {
       setFormData({
         nama_arho: '',
         nama_customer: '',
-        nama_armh: '',
         nomor_kontrak: '',
         nomor_langganan: '',
         angsuran_ke: '',
@@ -136,20 +134,6 @@ export default function Home() {
                         id="nama_customer"
                         required
                         value={formData.nama_customer}
-                        onChange={handleChange}
-                        className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm transition-all duration-200"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="nama_armh" className="block text-sm font-medium text-gray-700">
-                        Nama ARMH
-                      </label>
-                      <input
-                        type="text"
-                        name="nama_armh"
-                        id="nama_armh"
-                        value={formData.nama_armh}
                         onChange={handleChange}
                         className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm transition-all duration-200"
                       />

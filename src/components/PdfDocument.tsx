@@ -73,7 +73,6 @@ interface PdfDocumentProps {
     data: {
         nama_arho?: string
         nama_customer: string
-        nama_armh: string
         nomor_kontrak: string
         nomor_langganan: string
         angsuran_ke: string

@@ -7,6 +7,7 @@ import { pdf } from '@react-pdf/renderer'
 import PdfDocument from '@/components/PdfDocument'
 import Header from '@/components/Header'
 import { Download, Loader2, Trash2, UserPlus, RefreshCw, Plus } from 'lucide-react'
+import * as XLSX from 'xlsx'
 
 interface Submission {
     id: string
@@ -18,7 +19,6 @@ interface Submission {
 
 interface ParsedContent {
     nama_customer: string
-    nama_armh: string
     nomor_kontrak: string
     nomor_langganan: string
     angsuran_ke: string
@@ -173,6 +173,62 @@ export default function AdminPage() {
         }
     }
 
+    const handleDownloadExcel = () => {
+        try {
+            // Prepare data for Excel
+            const excelData = submissions.map((submission, index) => {
+                const parsed = parseContent(submission.content)
+                if (parsed) {
+                    return {
+                        'No': index + 1,
+                        'Nama Customer': parsed.nama_customer,
+                        'Nomor Kontrak': parsed.nomor_kontrak,
+                        'Nomor Langganan': parsed.nomor_langganan,
+                        'Angsuran Ke': parsed.angsuran_ke,
+                        'Nominal Angsuran': Number(parsed.nominal_angsuran),
+                        'Tanggal Jatuh Tempo': parsed.tanggal_jatuh_tempo,
+                        'Tanggal Maksimal Pembayaran': parsed.tanggal_maksimal_pembayaran,
+                        'Tanggal Pembuatan SPT': parsed.tanggal_pembuatan_spt,
+                        'Submitted At': new Date(submission.created_at).toLocaleString('id-ID')
+                    }
+                }
+            })
+
+            // Create worksheet
+            const worksheet = XLSX.utils.json_to_sheet(excelData)
+
+            // Set column widths
+            const columnWidths = [
+                { wch: 5 },  // No
+                { wch: 25 }, // Nama Customer
+                { wch: 20 }, // Nomor Kontrak
+                { wch: 20 }, // Nomor Langganan
+                { wch: 12 }, // Angsuran Ke
+                { wch: 18 }, // Nominal Angsuran
+                { wch: 20 }, // Tanggal Jatuh Tempo
+                { wch: 25 }, // Tanggal Maksimal Pembayaran
+                { wch: 20 }, // Tanggal Pembuatan SPT
+                { wch: 22 }, // Submitted At
+            ]
+            worksheet['!cols'] = columnWidths
+
+            // Create workbook
+            const workbook = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Submissions')
+
+            // Generate filename with current date
+            const now = new Date()
+            const dateStr = now.toISOString().split('T')[0]
+            const filename = `Form_Submissions_${dateStr}.xlsx`
+
+            // Download file
+            XLSX.writeFile(workbook, filename)
+        } catch (error) {
+            console.error('Error generating Excel:', error)
+            alert('Error generating Excel file')
+        }
+    }
+
     return (
         <div className="min-h-screen bg-gray-50">
             <Header />
@@ -186,13 +242,24 @@ export default function AdminPage() {
                                 <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Filled Forms</h1>
                                 <p className="mt-1 text-sm text-gray-500">View and manage all form submissions.</p>
                             </div>
-                            <button
-                                onClick={fetchSubmissions}
-                                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200"
-                            >
-                                <RefreshCw className="h-4 w-4 mr-2" />
-                                Refresh
-                            </button>
+
+                            {/* button download Excel */}
+                            <div className="flex space-x-2">
+                                <button
+                                    onClick={handleDownloadExcel}
+                                    className="inline-flex items-center rounded-xl text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-2 focus:outline-none focus:ring-green-500 font-medium rounded-base text-sm px-4 py-2.5 text-center leading-5"
+                                >
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Download Excel
+                                </button>
+                                <button
+                                    onClick={fetchSubmissions}
+                                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200"
+                                >
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Refresh
+                                </button>
+                            </div>
                         </div>
 
                         <div className="bg-white shadow-xl shadow-gray-200 overflow-hidden sm:rounded-2xl border border-gray-100">
@@ -260,111 +327,6 @@ export default function AdminPage() {
                                     })}
                                 </ul>
                             )}
-                        </div>
-                    </section>
-
-                    {/* User Management Section */}
-                    <section>
-                        <div className="mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900 tracking-tight">User Management</h2>
-                            <p className="mt-1 text-sm text-gray-500">Manage system access and roles.</p>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                            {/* Create User Form */}
-                            <div className="bg-white shadow-xl shadow-gray-200 sm:rounded-2xl p-8 border border-gray-100 h-fit">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                                    <UserPlus className="h-5 w-5 mr-2 text-indigo-600" />
-                                    Create New User
-                                </h3>
-                                <form onSubmit={handleCreateUser} className="space-y-5">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                                        <input
-                                            type="email"
-                                            required
-                                            value={newUserEmail}
-                                            onChange={(e) => setNewUserEmail(e.target.value)}
-                                            className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm transition-all duration-200"
-                                            placeholder="newuser@example.com"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Password</label>
-                                        <input
-                                            type="text"
-                                            required
-                                            value={newUserPassword}
-                                            onChange={(e) => setNewUserPassword(e.target.value)}
-                                            className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm transition-all duration-200"
-                                            placeholder="Secure password"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Role</label>
-                                        <div className="mt-1 relative">
-                                            <select
-                                                value={newUserRole}
-                                                onChange={(e) => setNewUserRole(e.target.value)}
-                                                className="block w-full px-4 py-2.5 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm appearance-none bg-white transition-all duration-200"
-                                            >
-                                                <option value="user">User</option>
-                                                <option value="admin">Admin</option>
-                                            </select>
-                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-700">
-                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        disabled={creatingUser}
-                                        className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-all duration-200 transform hover:-translate-y-0.5"
-                                    >
-                                        {creatingUser ? 'Creating...' : (
-                                            <>
-                                                <Plus className="h-4 w-4 mr-2" />
-                                                Create User
-                                            </>
-                                        )}
-                                    </button>
-                                </form>
-                            </div>
-
-                            {/* User List */}
-                            <div className="bg-white shadow-xl shadow-gray-200 sm:rounded-2xl overflow-hidden border border-gray-100 flex flex-col h-[500px]">
-                                <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
-                                    <h3 className="text-lg font-semibold text-gray-900">Existing Users</h3>
-                                </div>
-                                <div className="overflow-y-auto flex-1 p-2">
-                                    <ul className="space-y-2">
-                                        {users.map((user) => (
-                                            <li key={user.id} className="px-4 py-3 rounded-xl hover:bg-gray-50 flex items-center justify-between group transition-colors duration-200 border border-transparent hover:border-gray-100">
-                                                <div className="flex items-center space-x-3">
-                                                    <div className={`h-10 w-10 rounded-full flex items-center justify-center ${user.role === 'admin' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
-                                                        <span className="text-sm font-bold uppercase">{user.email[0]}</span>
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-medium text-gray-900 truncate">{user.email}</p>
-                                                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
-                                                            {user.role}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleDeleteUser(user.id)}
-                                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
-                                                    title="Delete User"
-                                                >
-                                                    <Trash2 className="h-5 w-5" />
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
                     </section>
 
