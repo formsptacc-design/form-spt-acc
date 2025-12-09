@@ -13,32 +13,34 @@ const styles = StyleSheet.create({
 
     // Content sections
     section: {
-        marginTop: 15,
+        marginTop: 40,
         marginBottom: 15,
     },
     // Body paragraphs
     textNoIndent: {
         fontSize: 12,
-        lineHeight: 1.5,
+        lineHeight: 2,
         textAlign: 'justify',
+    },
+    marginPerihal: {
         marginBottom: 10,
     },
     paragraph: {
         textIndent: 25,
         fontSize: 12,
-        lineHeight: 1.5,
+        lineHeight: 2,
         textAlign: 'justify',
-        marginBottom: 10,
+        marginBottom: 5,
     },
     paragraphNoMargin: {
         textIndent: 25,
         fontSize: 12,
-        lineHeight: 1.5,
+        lineHeight: 2,
         textAlign: 'justify',
     },
     textHeader: {
         fontSize: 12,
-        lineHeight: 1.5,
+        lineHeight: 2,
         textAlign: 'justify',
     },
     boldData: {
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
     },
     // Footer/Signature
     signatureSection: {
-        marginTop: 30,
+        marginTop: 20,
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
@@ -107,7 +109,7 @@ const PdfDocument = ({ data }: PdfDocumentProps) => {
         <Document>
             <Page size="A4" style={styles.page}>
                 {/* Header */}
-                <Image src="/logo_acc.jpg" style={{ width: 100, marginBottom: 20 }} />
+                <Image src="/logo_acc.jpg" style={{ width: 75, marginBottom: 20, marginTop: 20 }} />
                 <View>
 
                     <Text style={styles.textHeader}>PT. ASTRA SEDAYA FINANCE</Text>
@@ -118,20 +120,20 @@ const PdfDocument = ({ data }: PdfDocumentProps) => {
 
                 {/* Warning paragraph */}
                 <View style={styles.section}>
-                    <Text style={styles.textNoIndent}>
+                    <Text style={[styles.textNoIndent, styles.marginPerihal]}>
                         Perihal     : Peringatan Terakhir
                     </Text>
                     <Text style={styles.textNoIndent}>
                         Dengan hormat,
                     </Text>
                     <Text style={styles.paragraph}>
-                        Sesuai dengan perjanjian pembiayaan dengan penyerahan Hak Milik Fidusia : <Text style={styles.boldData}>{data.nomor_kontrak}</Text> dan No Lang : <Text style={styles.boldData}>{data.nomor_langganan}</Text>, menurut catatan kami per angsuran Bapak/Ibu ke-<Text style={styles.boldData}>{data.angsuran_ke}</Text> sebesar <Text style={styles.boldData}>{formatCurrency(data.nominal_angsuran)}</Text> yang jatuh tempo pada tanggal <Text style={styles.boldData}>{formatDate(data.tanggal_jatuh_tempo)}</Text> sampai hari ini belum dilunasi.
+                        Sesuai dengan perjanjian pembiayaan dengan penyerahan Hak Milik Fidusia : <Text style={styles.boldData}>{data.nomor_kontrak}</Text> No Lang: <Text style={styles.boldData}>{data.nomor_langganan}</Text> menurut catatan kami angsuran Bapak/Ibu ke-<Text style={styles.boldData}>{data.angsuran_ke}</Text> sebesar <Text style={styles.boldData}>{formatCurrency(data.nominal_angsuran)}</Text> yang jatuh tempo pada tanggal <Text style={styles.boldData}>{formatDate(data.tanggal_jatuh_tempo)}</Text> sampai hari ini belum dilunasi.
                     </Text>
                     <Text style={styles.paragraph}>
-                        Oleh karena itu, kami mohon Bapak/Ibu melunasi angsuran tersebut beserta keterlambatannya paling lambat tanggal <Text style={styles.boldData}>{formatDate(data.tanggal_maksimal_pembayaran)}</Text>.
+                        Oleh karena itu, kami mohon Bapak/Ibu melunasi angsuran tersebut diatas beserta denda keterlambatannya paling lambat tanggal  <Text style={styles.boldData}>{formatDate(data.tanggal_maksimal_pembayaran)}</Text>.
                     </Text>
                     <Text style={styles.paragraphNoMargin}>
-                        Apabila sampai batas waktu yang ditentukan Bapak/Ibu belum dapat menyelesaikan kewajiban tersebut, maka dengan sangat menyesal petugas kami akan <Text style={styles.boldData}>melakukan penarikan Kendaraan/Barang dimaksud</Text>. Seluruh biaya yang timbul akibat penarikan menjadi beban dan tanggung jawab Bapak/Ibu.
+                        Apabila sampai batas waktu yang ditentukan ternyata Bapak/Ibu belum juga menyelesaikan kewajiban tersebut diatas, maka dengan sangat menyesal petugas kami akan <Text style={styles.boldData}>melakukan penarikan kendaraan/barang tersebut</Text>. Seluruh biaya yang timbul akibat penarikan ini menjadi beban dan tanggung jawab Bapak/Ibu.
                     </Text>
                     <Text style={styles.textNoIndent}>
                         Atas perhatian Bapak/Ibu, kami ucapkan terima kasih.
