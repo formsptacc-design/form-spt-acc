@@ -31,6 +31,10 @@ export default function Home() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
+  const handleChangeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -113,7 +117,7 @@ export default function Home() {
                       <label htmlFor="nama_arho" className="block text-sm font-medium text-gray-700">
                         Nama ARHO <span className="text-red-500">*</span>
                       </label>
-                      <input
+                      {/* <input
                         type="text"
                         name="nama_arho"
                         id="nama_arho"
@@ -121,7 +125,32 @@ export default function Home() {
                         value={formData.nama_arho}
                         onChange={handleChange}
                         className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm transition-all duration-200"
-                      />
+                      /> */}
+                      <select
+                        name="nama_arho"
+                        id="nama_arho"
+                        required
+                        value={formData.nama_arho}
+                        onChange={handleChangeSelect}
+                        className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm transition-all duration-200"
+                      >
+                        <option value="" disabled selected>Select ARHO...</option>
+                        <option value="FRANS">FRANS</option>
+                        <option value="MASTUR">MASTUR</option>
+                        <option value="SAIFUDDIN">SAIFUDDIN</option>
+                        <option value="EKO">EKO</option>
+                        <option value="SATRIA">SATRIA</option>
+                        <option value="AAN">AAN</option>
+                        <option value="ALI RHEDA">ALI RHEDA</option>
+                        <option value="GERALDI">GERALDI</option>
+                        <option value="NURUDDIN">NURUDDIN</option>
+                        <option value="FAWZI">FAWZI</option>
+                        <option value="RIFQI">RIFQI</option>
+                        <option value="RYAN">RYAN</option>
+                        <option value="AMMAR">AMMAR</option>
+                        <option value="RUDI">RUDI</option>
+                        <option value="TANDI">TANDI</option>
+                      </select>
                     </div>
 
                     <div>
