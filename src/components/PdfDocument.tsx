@@ -121,7 +121,7 @@ const PdfDocument = ({ data }: PdfDocumentProps) => {
 
                     <Text style={styles.textHeader}>PT. ASTRA SEDAYA FINANCE</Text>
                     <Text style={styles.textHeader}>Kepada Yth.</Text>
-                    <Text style={styles.textHeader}>Bapak/Ibu <Text style={styles.boldData}>{data.nama_customer}</Text></Text>
+                    <Text style={styles.textHeader}>Bapak/Ibu <Text style={styles.boldData}>{data.nama_customer.toUpperCase()}</Text></Text>
                     <Text style={styles.textHeader}>di tempat</Text>
                 </View>
 
